@@ -10,7 +10,7 @@ OdometryDifferential::OdometryDifferential(double pos_x, double pos_y, double th
 
     sync.registerCallback(boost::bind(&OdometryDifferential::calculateDifferentialDrive, this, _1, _2, _3));
 
-    p_odom = n.advertise<nav_msgs::Odometry>("/car_odom", 50);
+    p_odom = n.advertise<nav_msgs::Odometry>("/car_odom_diff", 50);
 }
 
 void OdometryDifferential::broadcastTransform() {
@@ -21,7 +21,8 @@ void OdometryDifferential::broadcastTransform() {
 void OdometryDifferential::calculateDifferentialDrive(const FloatStampedConstPtr &V_r, const FloatStampedConstPtr &V_l,
                                                       const FloatStampedConstPtr &steer) {
 
-    long int timeDiff = V_r->header.stamp.sec - time_;
+//    ros::Time current_time = ros::Time::now();
+    long int dt = (V_r->header.stamp.sec - time_);
     time_ = V_r->header.stamp.sec;
 
     double alpha = steer->data / STEERING_FACTOR;
@@ -35,15 +36,15 @@ void OdometryDifferential::calculateDifferentialDrive(const FloatStampedConstPtr
     // integration of pos_y
     if (omega <= 0.2) {
         // 2nd Runge-Kutta
-        y = pos_y + V * timeDiff * (std::sin(theta + (omega * timeDiff / 2)));
-        x = pos_x + V * timeDiff * (std::cos(theta + (omega * timeDiff / 2)));
+        y = pos_y + V * dt * (std::sin(theta + (omega * dt / 2)));
+        x = pos_x + V * dt * (std::cos(theta + (omega * dt / 2)));
     } else {
         // exact integration of x and y
         y = pos_y - (V / omega) * (std::cos(alpha) - std::cos(theta));
         x = pos_x + (V / omega) * (std::sin(alpha) - std::sin(theta));
     }
 
-    theta = theta + (omega * timeDiff);
+    theta = theta + (omega * dt);
     pos_x = x;
     pos_y = y;
 
@@ -57,16 +58,15 @@ void OdometryDifferential::calculateDifferentialDrive(const FloatStampedConstPtr
     this->transform.setRotation(q);
 
 #ifdef DEBUG
-    std::string posX = std::to_string(pos_x) + " X ";
-    std::string posY = std::to_string(pos_y) + " Y ";
-    std::string thetaS = std::to_string(theta) + " T ";
-    ROS_INFO(posX.c_str());
-    ROS_INFO(posY.c_str());
-    ROS_INFO(thetaS.c_str());
+    ROS_INFO("Position in X: %f", pos_x);
+    ROS_INFO("Position in Y: %f", pos_y);
+    ROS_INFO("Steering angle: %f", theta);
 #endif
 
-    this->broadcastTransform();
-    this->publishAsOdom();
+    if(this->active) {
+        this->broadcastTransform();
+        this->publishAsOdom();
+    }
 
 }
 
@@ -89,4 +89,15 @@ void OdometryDifferential::publishAsOdom() {
     p_odom.publish(odom);
 }
 
+void OdometryDifferential::setPositionX(double x) {
+    this->pos_x = x;
+}
+
+void OdometryDifferential::setPostionY(double y) {
+    this->pos_y = y;
+}
+
+void OdometryDifferential::activate(bool flag) {
+    this->active = flag;
+}
 

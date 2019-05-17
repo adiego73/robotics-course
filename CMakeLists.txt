@@ -16,17 +16,21 @@ find_package(catkin REQUIRED COMPONENTS
         custom_messages
         message_filters
         message_generation
+        dynamic_reconfigure
 )
 
 add_message_files(
         FILES
         floatStamped.msg
-
 )
 
 generate_messages(
         DEPENDENCIES
         std_msgs
+)
+
+generate_dynamic_reconfigure_options(
+        cfg/config_params.cfg
 )
 
 ## System dependencies are found with CMake's conventions
@@ -40,4 +44,6 @@ include_directories(
 )
 
 add_executable(transform src/transform_node.cpp src/odometry_differential.cpp include/odometry_differential.h)
+add_dependencies(transform ${${PROJECT_NAME}_EXPORTED_TARGETS})
+#add_dependencies(param_second ${PROJECT_NAME}_gencfg)
 target_link_libraries(transform ${catkin_LIBRARIES})

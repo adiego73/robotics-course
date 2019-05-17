@@ -15,7 +15,8 @@ private:
     double V_x = 0;
     double V_y = 0;
     double omega = 0;
-    long int time_ = 0;
+
+    bool active = true;
 
     /**
      * ROS
@@ -30,6 +31,9 @@ private:
     message_filters::Subscriber<FloatStamped> steer;
 
     message_filters::Synchronizer<SyncPolicy> sync;
+
+    long int time_ = 0;
+
     /**
      * Constants
      */
@@ -47,6 +51,9 @@ private:
 public:
     OdometryDifferential(double pos_x, double pos_y, double theta);
     void calculateDifferentialDrive(const FloatStampedConstPtr& V_r, const FloatStampedConstPtr& V_l, const FloatStampedConstPtr& steer);
+    void setPositionX(double x);
+    void setPostionY(double y);
+    void activate(bool flag);
 };
 
 
