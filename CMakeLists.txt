@@ -43,7 +43,7 @@ include_directories(
         ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(transform src/transform_node.cpp src/odometry_differential.cpp include/odometry_differential.h)
+add_executable(transform src/transform_node.cpp src/odometry_differential.cpp include/odometry_differential.h src/odometry_ackerman.cpp include/odometry_ackerman.h)
 add_dependencies(transform ${${PROJECT_NAME}_EXPORTED_TARGETS})
 #add_dependencies(param_second ${PROJECT_NAME}_gencfg)
 target_link_libraries(transform ${catkin_LIBRARIES})

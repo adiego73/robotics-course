@@ -31,9 +31,9 @@ typedef ros_project_a::floatStampedPtr FloatStampedPtr;
 
 typedef message_filters::sync_policies::ApproximateTime<FloatStamped, FloatStamped, FloatStamped> SyncPolicy;
 
-enum OdometryType {DIFFERENTIAL = 0, ACKERMAN = 1, BOTH = 2};
+enum OdometryType {DIFFERENTIAL = 0, ACKERMAN = 1};
 
 
-#define DEBUG
+//#define DEBUG
 
 #endif //PROJECT_COMMONS_H

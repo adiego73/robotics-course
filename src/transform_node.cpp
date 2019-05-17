@@ -1,15 +1,26 @@
 #include <odometry_differential.h>
+#include <odometry_ackerman.h>
 
 #include <dynamic_reconfigure/server.h>
 #include <ros_project_a/config_paramsConfig.h>
 
-void reconfigureParams(ros_project_a::config_paramsConfig& params, uint32_t level, OdometryDifferential* odom){
-    odom->setPositionX(params.pos_x_param);
-    odom->setPostionY(params.pos_y_param);
+void reconfigureOdometryParams(ros_project_a::config_paramsConfig &params, uint32_t level, OdometryDifferential *d_odom,
+                               OdometryAckerman *a_odom){
 
-    odom->activate(params.odometry_type == OdometryType::DIFFERENTIAL || params.odometry_type == OdometryType::BOTH);
-
-    ROS_INFO("Reconfigure parameters %d", params.odometry_type);
+    if(params.odometry_type == OdometryType::DIFFERENTIAL) {
+        ROS_INFO("Reconfigure parameters for Differential drive => X: %f Y: %f", params.pos_x_param, params.pos_y_param);
+        d_odom->setPositionX(params.pos_x_param);
+        d_odom->setPostionY(params.pos_y_param);
+        d_odom->activate(true);
+        a_odom->activate(false);
+    }
+    else {
+        ROS_INFO("Reconfigure parameters for Ackerman => X: %f Y: %f", params.pos_x_param, params.pos_y_param);
+        a_odom->setPositionX(params.pos_x_param);
+        a_odom->setPostionY(params.pos_y_param);
+        a_odom->activate(true);
+        d_odom->activate(false);
+    }
 }
 
 int main(int argc, char **argv) {
@@ -18,8 +29,9 @@ int main(int argc, char **argv) {
     dynamic_reconfigure::Server<ros_project_a::config_paramsConfig> server;
 
     OdometryDifferential odometryDifferential(0,0,0);
+    OdometryAckerman odometryAckerman(0,0,0);
 
-    server.setCallback(boost::bind(&reconfigureParams, _1, _2, &odometryDifferential));
+    server.setCallback(boost::bind(&reconfigureOdometryParams, _1, _2, &odometryDifferential, &odometryAckerman));
 
     ros::spin();
 }

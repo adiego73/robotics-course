@@ -10,12 +10,12 @@ OdometryDifferential::OdometryDifferential(double pos_x, double pos_y, double th
 
     sync.registerCallback(boost::bind(&OdometryDifferential::calculateDifferentialDrive, this, _1, _2, _3));
 
-    p_odom = n.advertise<nav_msgs::Odometry>("/car_odom_diff", 50);
+    p_odom = n.advertise<nav_msgs::Odometry>("/car_odom/differential", 50);
 }
 
 void OdometryDifferential::broadcastTransform() {
     broadcaster.sendTransform(
-            tf::StampedTransform(transform, ros::Time::now(), "/transform", "/differential_odometry"));
+            tf::StampedTransform(transform, ros::Time::now(), "transform", "differential"));
 }
 
 void OdometryDifferential::calculateDifferentialDrive(const FloatStampedConstPtr &V_r, const FloatStampedConstPtr &V_l,
@@ -43,6 +43,8 @@ void OdometryDifferential::calculateDifferentialDrive(const FloatStampedConstPtr
         y = pos_y - (V / omega) * (std::cos(alpha) - std::cos(theta));
         x = pos_x + (V / omega) * (std::sin(alpha) - std::sin(theta));
     }
+
+    ROS_INFO("%f", pos_y);
 
     theta = theta + (omega * dt);
     pos_x = x;
