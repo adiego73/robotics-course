@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(ros_project_a)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-#add_compile_options(-std=c++11)
+add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -15,6 +15,18 @@ find_package(catkin REQUIRED COMPONENTS
         tf
         custom_messages
         message_filters
+        message_generation
+)
+
+add_message_files(
+        FILES
+        floatStamped.msg
+
+)
+
+generate_messages(
+        DEPENDENCIES
+        std_msgs
 )
 
 ## System dependencies are found with CMake's conventions

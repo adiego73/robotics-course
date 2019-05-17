@@ -11,8 +11,11 @@
 #include <message_filters/time_synchronizer.h>
 #include <message_filters/sync_policies/exact_time.h>
 #include <message_filters/sync_policies/approximate_time.h>
+#include <nav_msgs/Odometry.h>
+#include <tf/tfMessage.h>
+#include <tf/transform_broadcaster.h>
 
-#include "custom_messages/floatStamped.h"
+#include "ros_project_a/floatStamped.h"
 
 /**
  * CONSTANTS
@@ -22,9 +25,9 @@
  * TYPE DEFINITIONS
  */
 
-typedef custom_messages::floatStamped FloatStamped;
-typedef custom_messages::floatStampedConstPtr FloatStampedConstPtr;
-typedef custom_messages::floatStampedPtr FloatStampedPtr;
+typedef ros_project_a::floatStamped FloatStamped;
+typedef ros_project_a::floatStampedConstPtr FloatStampedConstPtr;
+typedef ros_project_a::floatStampedPtr FloatStampedPtr;
 
 typedef message_filters::sync_policies::ApproximateTime<FloatStamped, FloatStamped, FloatStamped> SyncPolicy;
 

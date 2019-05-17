@@ -1,12 +1,7 @@
-//
-// Created by diego on 5/16/19.
-//
-
 #ifndef PROJECT_ODOMETRY_H
 #define PROJECT_ODOMETRY_H
 
 #include <commons.h>
-#include <tf/transform_broadcaster.h>
 
 class OdometryDifferential {
 private:
@@ -17,14 +12,24 @@ private:
     double pos_y = 0;
     double theta = 0;
     double V = 0;
+    double V_x = 0;
+    double V_y = 0;
     double omega = 0;
     long int time_ = 0;
 
     /**
      * ROS
      */
+    ros::NodeHandle n;
     tf::TransformBroadcaster broadcaster;
+    tf::Transform transform;
+    ros::Publisher p_odom;
 
+    message_filters::Subscriber<FloatStamped> speed_r;
+    message_filters::Subscriber<FloatStamped> speed_l;
+    message_filters::Subscriber<FloatStamped> steer;
+
+    message_filters::Synchronizer<SyncPolicy> sync;
     /**
      * Constants
      */
@@ -35,8 +40,9 @@ private:
      * Private functions
      */
 
-    void publishAsTf();
+    void broadcastTransform();
     void publishAsOdom();
+//    void publishAsTf();
 
 public:
     OdometryDifferential(double pos_x, double pos_y, double theta);
