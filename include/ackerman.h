@@ -11,11 +11,6 @@ private:
      */
     const double FRONT_REAR_DISTANCE = 176.5;
 
-protected:
-    void broadcastTransform() override;
-
-    void publishAsOdom() override;
-
 public:
     Ackerman(double pos_x, double pos_y, double theta);
 

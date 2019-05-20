@@ -54,9 +54,9 @@ protected:
     /**
      * Virtual members
      */
-    virtual void broadcastTransform() = 0;
+    void broadcastTransform();
 
-    virtual void publishAsOdom() = 0;
+    void publishAsOdom();
 
     RobotOdometry(double pos_x, double pos_y, double theta);
 
