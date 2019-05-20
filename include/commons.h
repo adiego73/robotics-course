@@ -29,6 +29,6 @@ enum OdometryType {
 };
 
 
-//#define DEBUG
+#define DEBUG
 
 #endif //PROJECT_COMMONS_H
