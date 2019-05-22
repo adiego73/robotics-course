@@ -10,30 +10,26 @@ Differential::Differential(double pos_x, double pos_y, double theta) : RobotOdom
 
 void Differential::calculate(const FloatStampedConstPtr &V_r, const FloatStampedConstPtr &V_l, const FloatStampedConstPtr &steer)
 {
-    const ros::Time& current_time = V_r->header.stamp;
-    double dt = (current_time - time_).toSec();
-    time_ = current_time;
+//    const ros::Time& current_time = V_r->header.stamp;
+//    double dt = (current_time - time_).toSec();
+//    time_ = current_time;
+
+    double dt = 1;
 
     V = (V_r->data + V_l->data) / 2.0;
     omega = (V_r->data - V_l->data) / REAR_WHEELS_BASE_LINE;
 
-    pos_x = pos_x + V * std::cos(omega) * dt;
-    pos_y = pos_y + V * std::sin(omega) * dt;
-    theta = theta + (omega * dt);
+    V_x = V * std::cos(theta_dot);
+    V_y = V * std::sin(theta_dot);
 
-    V_x = V * std::cos(theta);
-    V_y = V * std::sin(theta);
-
-    tf::Quaternion q;
-    q.setRPY(0, 0, this->theta);
-
-    transform.setOrigin(tf::Vector3(this->pos_x, this->pos_y, 0));
-    transform.setRotation(q);
+    x_dot += (V_x * std::cos(theta_dot) - V_y * std::sin(theta_dot)) * dt;
+    y_dot += (V_x * std::sin(theta_dot) + V_y * std::cos(theta_dot)) * dt;
+    theta_dot += omega * dt;
 
 #ifdef DEBUG
-    ROS_INFO("Differential Drive :: position in X: %f", pos_x);
-    ROS_INFO("Differential Drive :: position in Y: %f", pos_y);
-    ROS_INFO("Differential Drive :: steering angle: %f", theta);
+    ROS_INFO("Differential Drive :: position in X: %f", x_dot);
+    ROS_INFO("Differential Drive :: position in Y: %f", y_dot);
+    ROS_INFO("Differential Drive :: steering angle: %f", theta_dot);
 #endif
 
     if (this->active) {
@@ -41,5 +37,22 @@ void Differential::calculate(const FloatStampedConstPtr &V_r, const FloatStamped
         this->publishAsOdom();
     }
 
+}
+
+void Differential::publishAsOdom()
+{
+    nav_msgs::Odometry odom;
+    odom.child_frame_id = "base_link_d";
+
+    odom.pose.pose.position.x = x_dot;
+    odom.pose.pose.position.y = y_dot;
+    odom.pose.pose.position.z = 0.0;
+    odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta_dot);
+
+    odom.twist.twist.linear.x = V_x;
+    odom.twist.twist.linear.y = V_y;
+    odom.twist.twist.angular.z = theta_dot;
+
+    RobotOdometry::publishAsOdom(odom);
 }
 

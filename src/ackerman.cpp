@@ -13,34 +13,47 @@ void Ackerman::calculate(const FloatStampedConstPtr &V_r, const FloatStampedCons
 
     double alpha = steer->data / STEERING_FACTOR;
 
-    const ros::Time& current_time = V_r->header.stamp;
-    double dt = (current_time - time_).toSec();
-    time_ = current_time;
+//    const ros::Time& current_time = V_r->header.stamp;
+//    double dt = (current_time - time_).toSec();
+//    time_ = current_time;
+
+    double dt = 1;
 
     V = (V_r->data + V_l->data) / 2.0;
     omega = V * std::tan(alpha) / FRONT_REAR_DISTANCE;
 
-    pos_x = pos_x + V * dt * std::cos(theta + (omega * dt / 2));
-    pos_y = pos_y + V * dt * std::sin(theta + (omega * dt / 2));
-    theta = theta + (omega * dt);
+    V_x = V * std::cos(theta_dot);
+    V_y = V * std::sin(theta_dot);
 
-    V_x = V * std::cos(alpha);
-    V_y = V * std::sin(alpha);
-
-    tf::Quaternion q;
-    q.setRPY(0, 0, this->theta);
-
-    transform.setOrigin(tf::Vector3(this->pos_x, this->pos_y, 0));
-    transform.setRotation(q);
+    x_dot += V * std::cos(theta_dot) * dt;
+    y_dot += V * std::sin(theta_dot) * dt;
+    theta_dot += omega * dt;
 
 #ifdef DEBUG
-    ROS_INFO("Ackerman :: position in X: %f", pos_x);
-    ROS_INFO("Ackerman :: position in Y: %f", pos_y);
-    ROS_INFO("Ackerman :: steering alpha: %f", theta);
+    ROS_INFO("Ackerman :: position in X: %f", x_dot);
+    ROS_INFO("Ackerman :: position in Y: %f", y_dot);
+    ROS_INFO("Ackerman :: steering alpha: %f", theta_dot);
 #endif
 
     if (this->active) {
         this->broadcastTransform();
         this->publishAsOdom();
     }
+}
+
+void Ackerman::publishAsOdom()
+{
+    nav_msgs::Odometry odom;
+    odom.child_frame_id = "base_link_a";
+
+    odom.pose.pose.position.x = x_dot;
+    odom.pose.pose.position.y = y_dot;
+    odom.pose.pose.position.z = 0.0;
+    odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta_dot);
+
+    odom.twist.twist.linear.x = V_x;
+    odom.twist.twist.linear.y = V_y;
+    odom.twist.twist.angular.z = omega;
+
+    RobotOdometry::publishAsOdom(odom);
 }

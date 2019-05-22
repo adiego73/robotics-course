@@ -19,9 +19,9 @@ protected:
     /**
      * Odometry parameters
      */
-    double pos_x = 0;
-    double pos_y = 0;
-    double theta = 0;
+    double x_dot = 0;
+    double y_dot = 0;
+    double theta_dot = 0;
 
     double V = 0;
     double V_x = 0;
@@ -45,7 +45,6 @@ protected:
     message_filters::Synchronizer<SyncPolicy> sync;
 
     tf::TransformBroadcaster broadcaster;
-    tf::Transform transform;
 
     /**
      * Constants
@@ -55,9 +54,9 @@ protected:
     /**
      * Virtual members
      */
-    void broadcastTransform();
+    virtual void broadcastTransform();
 
-    void publishAsOdom();
+    virtual void publishAsOdom(nav_msgs::Odometry odom);
 
     RobotOdometry(double pos_x, double pos_y, double theta);
 

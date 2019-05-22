@@ -12,6 +12,8 @@ public:
     Differential(double pos_x, double pos_y, double theta);
 
     void calculate(const FloatStampedConstPtr &V_r, const FloatStampedConstPtr &V_l, const FloatStampedConstPtr &steer) override;
+
+    void publishAsOdom();
 };
 
 
