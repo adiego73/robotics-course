@@ -10,31 +10,19 @@ Differential::Differential(double pos_x, double pos_y, double theta) : RobotOdom
 
 void Differential::calculate(const FloatStampedConstPtr &V_r, const FloatStampedConstPtr &V_l, const FloatStampedConstPtr &steer)
 {
-
-//    ros::Time current_time = ros::Time::now();
-    long int dt = (V_r->header.stamp.sec - time_);
-    time_ = V_r->header.stamp.sec;
-
-    double alpha = steer->data / STEERING_FACTOR;
+    const ros::Time& current_time = V_r->header.stamp;
+    double dt = (current_time - time_).toSec();
+    time_ = current_time;
 
     V = (V_r->data + V_l->data) / 2.0;
     omega = (V_r->data - V_l->data) / REAR_WHEELS_BASE_LINE;
 
-    // integration of pos_y
-    if (omega <= 0.2) {
-        // 2nd Runge-Kutta
-        pos_x = pos_x + V * dt * (std::cos(theta + (omega * dt / 2)));
-        pos_y = pos_y + V * dt * (std::sin(theta + (omega * dt / 2)));
-    } else {
-        // exact integration of x and y
-        pos_x = pos_x + (V / omega) * (std::sin(alpha) - std::sin(theta));
-        pos_y = pos_y - (V / omega) * (std::cos(alpha) - std::cos(theta));
-    }
-
+    pos_x = pos_x + V * std::cos(omega) * dt;
+    pos_y = pos_y + V * std::sin(omega) * dt;
     theta = theta + (omega * dt);
 
-    V_x = V * std::cos(alpha);
-    V_y = V * std::sin(alpha);
+    V_x = V * std::cos(theta);
+    V_y = V * std::sin(theta);
 
     tf::Quaternion q;
     q.setRPY(0, 0, this->theta);

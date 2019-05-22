@@ -13,8 +13,9 @@ void Ackerman::calculate(const FloatStampedConstPtr &V_r, const FloatStampedCons
 
     double alpha = steer->data / STEERING_FACTOR;
 
-    long int dt = V_r->header.stamp.sec - time_;
-    time_ = V_r->header.stamp.sec;
+    const ros::Time& current_time = V_r->header.stamp;
+    double dt = (current_time - time_).toSec();
+    time_ = current_time;
 
     V = (V_r->data + V_l->data) / 2.0;
     omega = V * std::tan(alpha) / FRONT_REAR_DISTANCE;

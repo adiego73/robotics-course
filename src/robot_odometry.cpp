@@ -27,17 +27,17 @@ void RobotOdometry::publishAsOdom()
     nav_msgs::Odometry odom;
 
     odom.header.stamp = ros::Time::now();
-    odom.header.frame_id = "odom";
-    odom.child_frame_id = "base_link";
+    odom.header.frame_id = "world";
+    odom.child_frame_id = "car";
 
     odom.pose.pose.position.x = pos_x;
     odom.pose.pose.position.y = pos_y;
     odom.pose.pose.position.z = 0.0;
     odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta);
 
-    odom.twist.twist.linear.x = V_x;
-    odom.twist.twist.linear.y = V_y;
-    odom.twist.twist.angular.z = theta;
+    odom.twist.twist.linear.x = V;
+    odom.twist.twist.linear.y = 0;
+    odom.twist.twist.angular.z = omega;
 
     p_odom.publish(odom);
 }

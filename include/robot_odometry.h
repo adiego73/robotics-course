@@ -28,7 +28,8 @@ protected:
     double V_y = 0;
     double omega = 0;
 
-    long int time_ = 0;
+//    long int time_ = 0;
+    ros::Time time_ = ros::Time(0,0);
 
     bool active = true;
     /**
