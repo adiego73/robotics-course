@@ -56,7 +56,9 @@ protected:
      */
     virtual void broadcastTransform();
 
-    virtual void publishAsOdom(nav_msgs::Odometry odom);
+    void publishAsOdom(std::string base_link_name);
+
+    double deg2rad(double degrees);
 
     RobotOdometry(double pos_x, double pos_y, double theta);
 

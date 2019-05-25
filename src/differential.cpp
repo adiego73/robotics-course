@@ -34,25 +34,8 @@ void Differential::calculate(const FloatStampedConstPtr &V_r, const FloatStamped
 
     if (this->active) {
         this->broadcastTransform();
-        this->publishAsOdom();
+        this->publishAsOdom("base_link_d");
     }
 
-}
-
-void Differential::publishAsOdom()
-{
-    nav_msgs::Odometry odom;
-    odom.child_frame_id = "base_link_d";
-
-    odom.pose.pose.position.x = x_dot;
-    odom.pose.pose.position.y = y_dot;
-    odom.pose.pose.position.z = 0.0;
-    odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta_dot);
-
-    odom.twist.twist.linear.x = V_x;
-    odom.twist.twist.linear.y = V_y;
-    odom.twist.twist.angular.z = theta_dot;
-
-    RobotOdometry::publishAsOdom(odom);
 }
 

@@ -22,14 +22,6 @@ RobotOdometry::RobotOdometry(double pos_x, double pos_y, double theta)
 
 }
 
-void RobotOdometry::publishAsOdom(nav_msgs::Odometry odom)
-{
-    odom.header.stamp = ros::Time::now();
-    odom.header.frame_id = "map";
-
-    p_odom.publish(odom);
-}
-
 void RobotOdometry::broadcastTransform()
 {
     tf::Transform transform;
@@ -37,4 +29,28 @@ void RobotOdometry::broadcastTransform()
     transform.setRotation(tf::createQuaternionFromRPY(0, 0, theta_dot));
 
     broadcaster.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "map", "base_link"));
+}
+
+void RobotOdometry::publishAsOdom(std::string base_link_name)
+{
+    nav_msgs::Odometry odom;
+    odom.header.stamp = ros::Time::now();
+    odom.header.frame_id = "map";
+    odom.child_frame_id = std::move(base_link_name);
+
+    odom.pose.pose.position.x = x_dot;
+    odom.pose.pose.position.y = y_dot;
+    odom.pose.pose.position.z = 0.0;
+    odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta_dot);
+
+    odom.twist.twist.linear.x = V_x;
+    odom.twist.twist.linear.y = V_y;
+    odom.twist.twist.angular.z = theta_dot;
+
+    p_odom.publish(odom);
+}
+
+double RobotOdometry::deg2rad(double degrees)
+{
+    return (degrees * M_PI) / 180;
 }

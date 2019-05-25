@@ -11,7 +11,7 @@ Ackerman::Ackerman(double pos_x, double pos_y, double theta) : RobotOdometry(pos
 void Ackerman::calculate(const FloatStampedConstPtr &V_r, const FloatStampedConstPtr &V_l, const FloatStampedConstPtr &steer)
 {
 
-    double alpha = steer->data / STEERING_FACTOR;
+    double alpha = this->deg2rad(steer->data) / STEERING_FACTOR;
 
 //    const ros::Time& current_time = V_r->header.stamp;
 //    double dt = (current_time - time_).toSec();
@@ -22,11 +22,18 @@ void Ackerman::calculate(const FloatStampedConstPtr &V_r, const FloatStampedCons
     V = (V_r->data + V_l->data) / 2.0;
     omega = V * std::tan(alpha) / FRONT_REAR_DISTANCE;
 
+//    V_x = V * std::cos(theta_dot);
+//    V_y = V * std::sin(theta_dot);
+//
+//    x_dot += V * std::cos(theta_dot) * dt;
+//    y_dot += V * std::sin(theta_dot) * dt;
+//    theta_dot += omega * dt;
+
     V_x = V * std::cos(theta_dot);
     V_y = V * std::sin(theta_dot);
 
-    x_dot += V * std::cos(theta_dot) * dt;
-    y_dot += V * std::sin(theta_dot) * dt;
+    x_dot += (V_x * std::cos(theta_dot) - V_y * std::sin(theta_dot)) * dt;
+    y_dot += (V_x * std::sin(theta_dot) + V_y * std::cos(theta_dot)) * dt;
     theta_dot += omega * dt;
 
 #ifdef DEBUG
@@ -37,23 +44,6 @@ void Ackerman::calculate(const FloatStampedConstPtr &V_r, const FloatStampedCons
 
     if (this->active) {
         this->broadcastTransform();
-        this->publishAsOdom();
+        this->publishAsOdom("base_link_d");
     }
-}
-
-void Ackerman::publishAsOdom()
-{
-    nav_msgs::Odometry odom;
-    odom.child_frame_id = "base_link_a";
-
-    odom.pose.pose.position.x = x_dot;
-    odom.pose.pose.position.y = y_dot;
-    odom.pose.pose.position.z = 0.0;
-    odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta_dot);
-
-    odom.twist.twist.linear.x = V_x;
-    odom.twist.twist.linear.y = V_y;
-    odom.twist.twist.angular.z = omega;
-
-    RobotOdometry::publishAsOdom(odom);
 }
