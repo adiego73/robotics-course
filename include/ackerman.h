@@ -9,7 +9,7 @@ private:
     /**
      * Constants
      */
-    const double FRONT_REAR_DISTANCE = 176.5;
+    const double FRONT_REAR_DISTANCE = 1.765; // from cm (176.5) to m
 
 public:
     Ackerman(double pos_x, double pos_y, double theta);

@@ -45,7 +45,7 @@ void RobotOdometry::publishAsOdom(std::string base_link_name)
 
     odom.twist.twist.linear.x = V_x;
     odom.twist.twist.linear.y = V_y;
-    odom.twist.twist.angular.z = theta_dot;
+    odom.twist.twist.angular.z = omega;
 
     p_odom.publish(odom);
 }

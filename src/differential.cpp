@@ -10,11 +10,9 @@ Differential::Differential(double pos_x, double pos_y, double theta) : RobotOdom
 
 void Differential::calculate(const FloatStampedConstPtr &V_r, const FloatStampedConstPtr &V_l, const FloatStampedConstPtr &steer)
 {
-//    const ros::Time& current_time = V_r->header.stamp;
-//    double dt = (current_time - time_).toSec();
-//    time_ = current_time;
-
-    double dt = 1;
+    const ros::Time& current_time = V_r->header.stamp;
+    double dt = (current_time - time_).toSec();
+    time_ = current_time;
 
     V = (V_r->data + V_l->data) / 2.0;
     omega = (V_r->data - V_l->data) / REAR_WHEELS_BASE_LINE;
@@ -22,8 +20,8 @@ void Differential::calculate(const FloatStampedConstPtr &V_r, const FloatStamped
     V_x = V * std::cos(theta_dot);
     V_y = V * std::sin(theta_dot);
 
-    x_dot += (V_x * std::cos(theta_dot) - V_y * std::sin(theta_dot)) * dt;
-    y_dot += (V_x * std::sin(theta_dot) + V_y * std::cos(theta_dot)) * dt;
+    x_dot += V * std::cos(theta_dot) * dt;
+    y_dot += V * std::sin(theta_dot) * dt;
     theta_dot += omega * dt;
 
 #ifdef DEBUG
