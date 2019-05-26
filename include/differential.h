@@ -6,7 +6,7 @@
 
 class Differential : public RobotOdometry {
 private:
-    const int REAR_WHEELS_BASE_LINE = 1.30; // from cm (130) to m
+    const double REAR_WHEELS_BASE_LINE = 1.30; // from cm (130) to m
 
 public:
     Differential(double pos_x, double pos_y, double theta);
