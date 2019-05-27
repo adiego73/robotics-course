@@ -33,6 +33,7 @@ void Differential::calculate(const FloatStampedConstPtr &V_r, const FloatStamped
     if (this->active) {
         this->broadcastTransform();
         this->publishAsOdom("base_link_d");
+        this->publishAsCustomMsg("Differential");
     }
 
 }

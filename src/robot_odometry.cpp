@@ -19,7 +19,7 @@ RobotOdometry::RobotOdometry(double pos_x, double pos_y, double theta)
         : x_dot(pos_x), y_dot(pos_y), theta_dot(theta), speed_r(n, "/speedR_stamped", 1),
           speed_l(n, "/speedL_stamped", 1), steer(n, "/steer_stamped", 1), sync(SyncPolicy(10), speed_r, speed_l, steer)
 {
-
+    p_codom = n.advertise<ros_project_a::robotOdometry>("/car_odom", 50);
 }
 
 void RobotOdometry::broadcastTransform()
@@ -54,3 +54,19 @@ double RobotOdometry::deg2rad(double degrees)
 {
     return (degrees * M_PI) / 180;
 }
+
+void RobotOdometry::publishAsCustomMsg(std::string type)
+{
+    ros_project_a::robotOdometry odom;
+
+    odom.header.stamp = ros::Time::now();
+    odom.header.frame_id = "map";
+
+    odom.x = x_dot;
+    odom.y = y_dot;
+    odom.theta = theta_dot;
+    odom.type = std::move(type);
+
+    p_codom.publish(odom);
+}
+

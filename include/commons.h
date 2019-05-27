@@ -10,6 +10,7 @@
 #include <message_filters/sync_policies/approximate_time.h>
 
 #include "ros_project_a/floatStamped.h"
+#include "ros_project_a/robotOdometry.h"
 
 /**
  * CONSTANTS

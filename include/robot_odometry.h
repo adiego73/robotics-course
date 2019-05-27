@@ -37,6 +37,7 @@ protected:
      */
     ros::NodeHandle n;
     ros::Publisher p_odom;
+    ros::Publisher p_codom;
 
     message_filters::Subscriber<FloatStamped> speed_r;
     message_filters::Subscriber<FloatStamped> speed_l;
@@ -57,6 +58,8 @@ protected:
     virtual void broadcastTransform();
 
     void publishAsOdom(std::string base_link_name);
+
+    void publishAsCustomMsg(std::string type);
 
     double deg2rad(double degrees);
 

@@ -35,5 +35,6 @@ void Ackerman::calculate(const FloatStampedConstPtr &V_r, const FloatStampedCons
     if (this->active) {
         this->broadcastTransform();
         this->publishAsOdom("base_link_d");
+        this->publishAsCustomMsg("Ackerman");
     }
 }
