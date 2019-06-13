@@ -1,9 +1,9 @@
 
 <launch>
     <!--  ***************** Robot simulation *****************  -->
-    <node pkg="ros_project_a" type="transform" name="transform"></node>
+    <node pkg="first_project" type="transform" name="transform"></node>
     <node pkg="rqt_reconfigure" type="rqt_reconfigure" name="rqt_reconfigure"></node>
 
     <!--  **************** Visualisation ****************  -->
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find ros_project_a)/rviz/odometry.rviz"/>
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find first_project)/rviz/odometry.rviz"/>
 </launch>

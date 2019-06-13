@@ -2,9 +2,9 @@
 #include <ackerman.h>
 
 #include <dynamic_reconfigure/server.h>
-#include <ros_project_a/config_paramsConfig.h>
+#include <first_project/config_paramsConfig.h>
 
-void reconfigureOdometryParams(const ros_project_a::config_paramsConfig &params, uint32_t level, RobotOdometry &d_odom, RobotOdometry &a_odom)
+void reconfigureOdometryParams(const first_project::config_paramsConfig &params, uint32_t level, RobotOdometry &d_odom, RobotOdometry &a_odom)
 {
     d_odom.setPositionX(params.pos_x_param);
     d_odom.setPostionY(params.pos_y_param);
@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "transform");
 
-    dynamic_reconfigure::Server<ros_project_a::config_paramsConfig> server;
+    dynamic_reconfigure::Server<first_project::config_paramsConfig> server;
 
     Differential dd_odometry(0, 0, 0);
     Ackerman ak_odometry(0, 0, 0);
@@ -40,7 +40,3 @@ int main(int argc, char **argv)
 
     ros::spin();
 }
-
-
-
-

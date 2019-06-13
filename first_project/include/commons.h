@@ -9,8 +9,8 @@
 #include <message_filters/sync_policies/exact_time.h>
 #include <message_filters/sync_policies/approximate_time.h>
 
-#include "ros_project_a/floatStamped.h"
-#include "ros_project_a/robotOdometry.h"
+#include "first_project/floatStamped.h"
+#include "first_project/robotOdometry.h"
 
 /**
  * CONSTANTS
@@ -20,8 +20,8 @@
  * TYPE DEFINITIONS
  */
 
-typedef ros_project_a::floatStamped FloatStamped;
-typedef ros_project_a::floatStampedConstPtr FloatStampedConstPtr;
+typedef first_project::floatStamped FloatStamped;
+typedef first_project::floatStampedConstPtr FloatStampedConstPtr;
 
 typedef message_filters::sync_policies::ApproximateTime<FloatStamped, FloatStamped, FloatStamped> SyncPolicy;
 
