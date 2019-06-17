@@ -49,6 +49,5 @@ add_executable(transform src/transform_node.cpp
         src/ackerman.cpp include/ackerman.h
         src/robot_odometry.cpp include/robot_odometry.h)
 
-add_dependencies(transform ${${PROJECT_NAME}_EXPORTED_TARGETS})
-#add_dependencies(param_second ${PROJECT_NAME}_gencfg)
+add_dependencies(transform ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(transform ${catkin_LIBRARIES})
