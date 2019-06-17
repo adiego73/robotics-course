@@ -15,11 +15,6 @@ find_package(catkin REQUIRED COMPONENTS
         tf
         )
 
-generate_messages(
-        DEPENDENCIES
-        std_msgs
-)
-
 ## System dependencies are found with CMake's conventions
 find_package(Boost REQUIRED COMPONENTS system)
 
@@ -31,5 +26,5 @@ include_directories(
 )
 
 add_executable(odometry src/odometry_node.cpp src/ackerman_odom.cpp)
-add_dependencies(odometry ${${PROJECT_NAME}_EXPORTED_TARGETS})
+add_dependencies(odometry ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(odometry ${catkin_LIBRARIES})
