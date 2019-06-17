@@ -22,7 +22,20 @@ void Differential::calculate(const FloatStampedConstPtr &V_r, const FloatStamped
 
     x_dot += V * std::cos(theta_dot) * dt;
     y_dot += V * std::sin(theta_dot) * dt;
-    theta_dot += omega * dt;
+
+//    // integration of pos_y
+//    if (omega <= 0.2) {
+//        // 2nd Runge-Kutta
+//        y_dot += V * timeDiff * (std::sin(theta + (omega * timeDiff / 2)));
+//        x_dot += V * timeDiff * (std::cos(theta + (omega * timeDiff / 2)));
+//    } else {
+//        // exact integration of x and y
+//        y_dot -= (V / omega) * (std::cos(omega) - std::cos(theta));
+//        x_dot += (V / omega) * (std::sin(omega) - std::sin(theta));
+//    }
+
+    theta_dot += (omega * timeDiff);
+
 
 #ifdef DEBUG
     ROS_INFO("Differential Drive :: position in X: %f", x_dot);
