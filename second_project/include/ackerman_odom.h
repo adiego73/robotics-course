@@ -23,9 +23,8 @@ private:
     double omega = 0;
 
 //    long int time_ = 0;
-    ros::Time time_ = ros::Time(0,0);
+    ros::Time time_ = ros::Time(0, 0);
 
-    bool active = true;
     /**
      * ROS
      */
@@ -38,8 +37,8 @@ private:
     /**
      * Constants
      */
-    const std::string CHILD_FRAME_ID = "car";
-    const std::string FRAME_ID = "world";
+    const std::string CHILD_FRAME_ID = "base_link";
+    const std::string FRAME_ID = "odom";
     const int STEERING_FACTOR = 18;
     const double FRONT_REAR_DISTANCE = 1.765; // from cm (176.5) to m
 
@@ -57,11 +56,7 @@ public:
 
     double deg2rad(double degrees);
 
-    void setPositionX(double x);
-
-    void setPostionY(double y);
-
-    void activate(bool flag);
+    double kmph2mps(double speed_km_per_hour);
 };
 
 

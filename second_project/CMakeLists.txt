@@ -25,6 +25,12 @@ include_directories(
         ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(odometry src/odometry_node.cpp src/ackerman_odom.cpp)
+add_executable(odometry src/odometry_node.cpp
+        src/ackerman_odom.cpp)
 add_dependencies(odometry ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(odometry ${catkin_LIBRARIES})
+
+add_executable(imu_transform src/imu/imu_transform_node.cpp
+        src/imu/imutransform.cpp)
+add_dependencies(imu_transform ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(imu_transform ${catkin_LIBRARIES})

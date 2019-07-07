@@ -4,17 +4,7 @@ AckermanOdometry::AckermanOdometry(double pos_x, double pos_y, double theta) : x
 {
     speedsteer = n.subscribe("/speedsteer", 1000, &AckermanOdometry::calculate, this);
 
-    p_odom = n.advertise<nav_msgs::Odometry>("/car_odom/ackerman", 50);
-}
-
-void AckermanOdometry::setPositionX(double x)
-{
-    this->x_dot = x;
-}
-
-void AckermanOdometry::setPostionY(double y)
-{
-    this->y_dot = y;
+    p_odom = n.advertise<nav_msgs::Odometry>("/car/odometry/ackerman", 50);
 }
 
 void AckermanOdometry::broadcastTransform()
@@ -50,6 +40,10 @@ double AckermanOdometry::deg2rad(double degrees)
     return (degrees * M_PI) / 180;
 }
 
+double AckermanOdometry::kmph2mps(double speed_km_per_hour){
+    return speed_km_per_hour / 3.6;
+}
+
 void AckermanOdometry::calculate(const geometry_msgs::PointStampedConstPtr &speed_steer)
 {
     double alpha = this->deg2rad(speed_steer->point.x) / STEERING_FACTOR;
@@ -58,7 +52,7 @@ void AckermanOdometry::calculate(const geometry_msgs::PointStampedConstPtr &spee
     double dt = (current_time - time_).toSec();
     time_ = current_time;
 
-    V = speed_steer->point.y;
+    V = this->kmph2mps(speed_steer->point.y);
     omega = V * std::tan(alpha) / FRONT_REAR_DISTANCE;
 
     V_x = V * std::cos(theta_dot);
