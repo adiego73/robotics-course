@@ -5,10 +5,11 @@
 
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/PointStamped.h>
+#include <geometry_msgs/TransformStamped.h>
 #include <tf/tfMessage.h>
 #include <tf/transform_broadcaster.h>
 
-class AckermanOdometry {
+class Odometry {
 private:
     /**
  * Odometry parameters
@@ -48,7 +49,7 @@ private:
     void calculate(const geometry_msgs::PointStampedConstPtr &speed_steer);
 
 public:
-    AckermanOdometry(double pos_x, double pos_y, double theta);
+    Odometry(double pos_x, double pos_y, double theta);
 
     void broadcastTransform();
 

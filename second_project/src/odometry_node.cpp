@@ -1,4 +1,4 @@
-#include <ackerman_odom.h>
+#include <odometry.h>
 
 int main(int argc, char **argv)
 {
@@ -14,7 +14,8 @@ int main(int argc, char **argv)
 
     ros::init(argc, argv, "odometry_node");
 
-    AckermanOdometry ak_odometry(pos_x, pos_y, theta);
+    Odometry ak_odometry(pos_x, pos_y, theta);
+    ROS_INFO("test");
 
     ros::spin();
 }

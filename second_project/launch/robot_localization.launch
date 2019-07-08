@@ -4,15 +4,19 @@
 
     <node pkg="second_project" type="odometry" name="odometry_node"/>
     <node pkg="second_project" type="imu_transform" name="imu_transform"/>
+    <node pkg="second_project" type="gps_transform" name="gps_transform"/>
 
-    <node pkg="imu_complementary_filter" type="complementary_filter_node" name="complementary_filter_gain_node"
-          output="screen">
-        <param name="do_bias_estimation" value="true"/>
-        <param name="do_adaptive_gain" value="true"/>
-        <param name="use_mag" value="false"/>
-        <param name="gain_acc" value="0.01"/>
-        <param name="gain_mag" value="0.01"/>
-    </node>
+    <node pkg="tf2_ros" type="static_transform_publisher" name="imu_to_base" args="0 0 0 0 0 0 base_link imu_link" />
+    <node pkg="tf2_ros" type="static_transform_publisher" name="gps_to_base" args="0 0 0 0 0 0 base_link gps" />
+
+<!--    <node pkg="imu_complementary_filter" type="complementary_filter_node" name="complementary_filter_node" output="screen">-->
+<!--        <param name="do_bias_estimation" value="true"/>-->
+<!--        <param name="do_adaptive_gain" value="true"/>-->
+<!--        <param name="use_mag" value="false"/>-->
+<!--        <param name="gain_acc" value="0.01"/>-->
+<!--        <param name="gain_mag" value="0.01"/>-->
+<!--        <remap from="imu" to="/imu/data_raw"/>-->
+<!--    </node>-->
 
     <node name="ekf_node" pkg="robot_localization" type="ekf_localization_node" clear_params="true">
 
@@ -32,12 +36,12 @@
         <param name="imu0" value="/car/imu"/>
 
         <rosparam param="odom0_config">
-            [true, true, true, false, false, true, false, false, false, false, false, false, false, false, false]
+            [false, false, false, false, false, false, true, true, true, false, false, false, false, false, false]
         </rosparam>
 
         <rosparam param="imu0_config">
-            <!--            X ,   Y  ,   Z  , roll, pitch, yaw, X_dot, Y_dot, Z_dot, roll_dot, pitch_dot, yaw_dot .... -->
-            [false, false, false, true, true, true, false, false, false, true, true, false, true, true, true]
+            <!-- X ,   Y ,   Z  , roll, pitch, yaw, X_dot, Y_dot, Z_dot, roll_dot, pitch_dot, yaw_dot .... -->
+            [false, false, false, true,  true,  true, false, false, false, true,  true,  false, true,  true,  true]
         </rosparam>
 
         <param name="odom0_differential" value="false"/>
@@ -56,49 +60,47 @@
         <param name="debug" value="false"/>
         <param name="debug_out_file" value="debug_ekf_localization.txt"/>
 
-        <!--        <param name="publish_tf" value="true" />-->
+        <param name="publish_tf" value="true"/>
 
-        <rosparam param="process_noise_covariance">
-           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        <rosparam param="process_noise_covariance">[0.05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0.05, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0.06, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0.03, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0.03, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0.06, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0.025, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0.025, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0.04, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0.01, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.01, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.02, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.01, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.01, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.015]
         </rosparam>
 
-        <rosparam param="initial_estimate_covariance">
-           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        <rosparam param="initial_estimate_covariance">[1e-9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 1e-9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 1e-9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 1e-9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 1e-9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 1e-9, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 1e-9, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 1e-9, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 1e-9, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 1e-9, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1e-9, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1e-9, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1e-9, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1e-9, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1e-9]
         </rosparam>
 
     </node>
 
-    <!--    <node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform_node">-->
-    <!--        <rosparam command="load" file="$(find second_project)/params/robot_localization_params.yaml"/>-->
-    <!--    </node>-->
+    <node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform_node">
+        <rosparam command="load" file="$(find second_project)/params/robot_localization_params.yaml"/>
+    </node>
 
 
 </launch>
